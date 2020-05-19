@@ -1,33 +1,32 @@
 package jg.socialapi.service;
 
-import jg.socialapi.entity.Post;
+import jg.socialapi.dto.MessageDto;
+import jg.socialapi.entity.Message;
+import jg.socialapi.util.mapper.MessageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Service
 public class WallServiceImpl implements WallService {
 
-    private final PostService postService;
+    private final UserService userService;
 
     @Autowired
-    public WallServiceImpl(PostService postService) {
-        this.postService = postService;
+    public WallServiceImpl(UserService userService) {
+        this.userService = userService;
     }
 
-    public String getWall(String userName) {
-        System.out.println("Get wall service.getWall(" + userName + ");");
-        Collection<Post> wallPosts = postService.getMessagesForUser(userName);
-        System.out.println("wall posts " + wallPosts);
-        StringBuilder response = new StringBuilder();
-        //TODO na streamy i kolejność!
-        for (Post wallPost : wallPosts) {
-            response.append(wallPost);
-        }
-        System.out.println("response: " + response);
-        return response.toString();
+    public Collection<MessageDto> getWall(String username) {
+        return userService.getUser(username)
+                .getMessages()
+                .stream()
+                .sorted(Comparator.comparing(Message::getTimestamp).reversed())
+                .map(MessageMapper::mapMessageToDto)
+                .collect(Collectors.toList());
 
     }
-
 }

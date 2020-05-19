@@ -1,6 +1,6 @@
 package jg.socialapi.service;
 
-import jg.socialapi.entity.Post;
+import jg.socialapi.entity.Message;
 import jg.socialapi.entity.User;
 import jg.socialapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,24 +21,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addToFollowingList(User follower, User followed) {
-        follower.getFollowing().add(followed);
+        follower.getFollowed().add(followed);
         userRepository.save(follower);
     }
 
-    @Override //TODO przerobić na ładne
+    @Override
     public User getUser(String username) {
         Optional<User> userOptional = userRepository.findByName(username);
         if (userOptional.isPresent()) {
-            System.out.println("User is present!");
             return userOptional.get();
         }
-        System.out.println("User is not present!");
-        User user = new User();
-        user.setName(username);
-        user.setFollowing(new ArrayList<User>(){});
-        user.setPosts(new ArrayList<Post>(){});
-        userRepository.save(user);
-        return user;
+        return userRepository.save(createNewUser(username));
+    }
+
+    private User createNewUser(String username) {
+        return new User()
+                    .setName(username)
+                    .setFollowed(new ArrayList<User>(){})
+                    .setMessages(new ArrayList<Message>(){});
     }
 
     @Override
@@ -46,13 +46,4 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    private User getUserIfExists(String username) {
-        //TODO implement userRepository.findUserByName
-        return null;
-    }
-
-    private User registerUser(String username) {
-        //TODO implement
-        return null;
-    }
 }

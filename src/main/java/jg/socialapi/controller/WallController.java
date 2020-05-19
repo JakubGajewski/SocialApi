@@ -1,7 +1,7 @@
 package jg.socialapi.controller;
 
-import jg.socialapi.entity.Post;
-import jg.socialapi.service.PostService;
+import jg.socialapi.dto.MessageDto;
+import jg.socialapi.entity.Message;
 import jg.socialapi.service.WallService;
 import jg.socialapi.util.ControllerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +25,10 @@ public class WallController {
         this.wallService = wallService;
     }
 
-    @GetMapping(value = "/wall", produces = "application/json")
-    public ResponseEntity<String> readWall(@RequestHeader String username) {
-        String response = wallService.getWall(username);
-        //TODO implement
-        //TODO jsonify and order
-        return new ResponseEntity(response, ControllerHelper.applicationJsonHeaders(), HttpStatus.OK); //TODO another status if message too long
+    @GetMapping(value = "/wall")
+    public ResponseEntity<List<Message>> readWall(@RequestHeader String username) {
+        Collection<MessageDto> wall = wallService.getWall(username);
+        return new ResponseEntity(wall, ControllerHelper.applicationJsonHeaders(), HttpStatus.OK);
     }
+
 }

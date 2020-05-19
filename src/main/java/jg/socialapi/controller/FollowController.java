@@ -1,9 +1,10 @@
 package jg.socialapi.controller;
 
 import jg.socialapi.entity.User;
+import jg.socialapi.exceptions.FollowYourselfException;
 import jg.socialapi.service.UserService;
 import jg.socialapi.util.ControllerHelper;
-import jg.socialapi.util.Messages;
+import jg.socialapi.util.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,32 +26,26 @@ public class FollowController {
     }
 
     @PutMapping(value = "/follow/{userToFollow}", produces = "application/json")
-    public ResponseEntity follow(@PathVariable String userToFollow, @RequestHeader("username") String username) {
-        //TODO refactor
-
-        if (isSelfFollowing(userToFollow, username)) {
-            return new ResponseEntity(Messages.FOLLOWING_YOURSELF, ControllerHelper.applicationJsonHeaders(), HttpStatus.BAD_REQUEST);
-        }
-
-        System.out.println("PUT request on follow");
+    public ResponseEntity follow(@PathVariable String userToFollow, @RequestHeader("username") String username) throws FollowYourselfException {
+        checkIfNotSelfFollowing(userToFollow, username);
         User follower = userService.getUser(username);
-        System.out.println("Follower: " + follower);
         User followed = userService.getUser(userToFollow);
-        System.out.println("Followed: " + followed);
 
         if (isAlreadyFollowing(follower, followed)) {
-            return new ResponseEntity(Messages.USER_ALREADY_IN_FOLLOWING_LIST, ControllerHelper.applicationJsonHeaders(), HttpStatus.BAD_REQUEST); //TODO another status if message too long
+            return new ResponseEntity(ErrorMessages.USER_ALREADY_IN_FOLLOWING_LIST, ControllerHelper.applicationJsonHeaders(), HttpStatus.BAD_REQUEST);
         }
 
         userService.addToFollowingList(follower, followed);
-        return new ResponseEntity(follower, ControllerHelper.applicationJsonHeaders(), HttpStatus.CREATED); //TODO another status if message too long
+        return new ResponseEntity(follower, ControllerHelper.applicationJsonHeaders(), HttpStatus.OK);
     }
 
-    private boolean isSelfFollowing(String followerName, String followingName) {
-        return followerName.equals(followingName)? true : false;
+    private void checkIfNotSelfFollowing(@PathVariable String userToFollow, @RequestHeader("username") String username) {
+        if (userToFollow.equals(username)) {
+            throw new FollowYourselfException("You can not follow yourself");
+        }
     }
 
     private boolean isAlreadyFollowing(User follower, User followed) {
-        return follower.getFollowing().contains(followed) ? true : false;
+        return follower.getFollowed().contains(followed);
     }
 }

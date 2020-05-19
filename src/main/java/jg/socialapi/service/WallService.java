@@ -1,5 +1,11 @@
 package jg.socialapi.service;
 
+import jg.socialapi.dto.MessageDto;
+
+import java.util.Collection;
+
 public interface WallService {
-    public String getWall(String userName);
+
+    Collection<MessageDto> getWall(String username);
+
 }
