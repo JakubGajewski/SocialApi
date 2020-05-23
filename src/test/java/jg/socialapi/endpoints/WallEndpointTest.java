@@ -85,8 +85,7 @@ public class WallEndpointTest {
     }
 
     private User saveUser(String username) {
-        User user = new User();
-        user.setName(username);
+        User user = new User(username);
         return userService.saveUser(user);
     }
 }

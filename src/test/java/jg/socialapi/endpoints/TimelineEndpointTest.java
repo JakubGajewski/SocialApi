@@ -81,18 +81,11 @@ public class TimelineEndpointTest {
     }
 
     private void persistMockedData() {
-        User followingUser = saveUser(SAMPLE_USER_NAME);
-        User followedUser = saveUser(SAMPLE_FOLLOWED_USER_NAME);
+        User followingUser = userService.saveUser(new User(SAMPLE_USER_NAME));
+        User followedUser = userService.saveUser(new User(SAMPLE_FOLLOWED_USER_NAME));
         userService.addToFollowingList(followingUser, followedUser);
         messageService.getMessage(SAMPLE_FOLLOWED_USER_NAME, SAMPLE_MESSAGE);
         messageService.getMessage(SAMPLE_FOLLOWED_USER_NAME, SAMPLE_MESSAGE_1);
     }
 
-    private User saveUser(String username) {
-        User user = new User();
-        user.setName(username)
-                .setFollowed(new ArrayList<User>())
-                .setMessages(new ArrayList<Message>());
-        return userService.saveUser(user);
-    }
 }

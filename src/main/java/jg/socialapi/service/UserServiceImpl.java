@@ -1,13 +1,14 @@
 package jg.socialapi.service;
 
-import jg.socialapi.entity.Message;
 import jg.socialapi.entity.User;
 import jg.socialapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,23 +27,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(String username) {
-        Optional<User> userOptional = userRepository.findByName(username);
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        }
-        return userRepository.save(createNewUser(username));
+    public Optional<User> findUser(String username) {
+        return userRepository.findByName(username);
     }
 
-    private User createNewUser(String username) {
-        return new User()
-                    .setName(username)
-                    .setFollowed(new ArrayList<User>(){})
-                    .setMessages(new ArrayList<Message>(){});
+    @Override
+    public User persistUser(String username) {
+        return userRepository.save(new User(username));
     }
 
     @Override
     public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateUser(User user) {
         return userRepository.save(user);
     }
 

@@ -1,8 +1,3 @@
-Assumptions:
-- everytime we ask for the new user (with any endpoint), if user does not exists,
-it's created, f.e. if Bob requests to follow Alice, and Alice does not exist -> Alice is created,
-or if we want to see XYZ wall, then we see empty wall, and user XYZ is created
-
 I've simplified a lot of things in this application - only because time
 constraints. I believe that the code that I've written should be enough
 for the recruitment process, but if I'm wrong, please let me know,

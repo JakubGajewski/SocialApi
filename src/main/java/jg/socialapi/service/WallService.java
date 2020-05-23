@@ -6,6 +6,6 @@ import java.util.Collection;
 
 public interface WallService {
 
-    Collection<MessageDto> getWall(String username);
+    Collection<MessageDto> tryGetWall(String username);
 
 }

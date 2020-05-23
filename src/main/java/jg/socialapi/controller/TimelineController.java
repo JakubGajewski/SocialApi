@@ -25,7 +25,7 @@ public class TimelineController {
 
     @GetMapping(value = "/timeline", produces = "application/json")
     public ResponseEntity<Collection<MessageDto>> timeline(@RequestHeader String username) {
-        Collection<MessageDto> timeline = timelineService.getTimeline(username);
+        Collection<MessageDto> timeline = timelineService.tryGetTimeline(username);
         return new ResponseEntity<>(timeline, ControllerHelper.applicationJsonHeaders(), HttpStatus.OK);
     }
 

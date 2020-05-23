@@ -13,6 +13,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Optional;
+
 import static jg.socialapi.Constants.SAMPLE_FOLLOWED_USER_NAME;
 import static jg.socialapi.Constants.SAMPLE_USER_NAME;
 import static jg.socialapi.Constants.USER_HEADER;
@@ -59,14 +61,16 @@ public class FollowEndpointTest {
     }
 
     private void persistMockedData() {
-        userService.getUser(SAMPLE_USER_NAME);
-        userService.getUser(SAMPLE_FOLLOWED_USER_NAME);
+        userService.saveUser(new User(SAMPLE_USER_NAME));
+        userService.saveUser(new User(SAMPLE_FOLLOWED_USER_NAME));
     }
 
     private void assertUserIsInFollowingList() {
-        User followingUser = userService.getUser(SAMPLE_USER_NAME);
-        User followedUser = userService.getUser(SAMPLE_FOLLOWED_USER_NAME);
-        assertThat(followingUser.getFollowed().get(0).getName()).isEqualTo(followedUser.getName());
+        Optional<User> followingUser = userService.findUser(SAMPLE_USER_NAME);
+        Optional<User> followedUser = userService.findUser(SAMPLE_FOLLOWED_USER_NAME);
+        assertThat(followingUser.isPresent()).isTrue();
+        assertThat(followedUser.isPresent()).isTrue();
+        assertThat(followingUser.get().getFollowed().get(0).getName()).isEqualTo(followedUser.get().getName());
     }
 }
 

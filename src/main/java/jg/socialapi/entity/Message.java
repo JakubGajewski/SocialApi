@@ -29,4 +29,9 @@ public class Message {
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonManagedReference
     private User user;
+
+    public Message(String value, User user) {
+        this.value = value;
+        this.user = user;
+    }
 }

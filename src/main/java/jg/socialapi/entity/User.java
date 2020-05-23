@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,4 +35,10 @@ public class User {
     @ToString.Exclude
     @JsonIgnoreProperties({"following"})
     private List<User> followed;
+
+    public User(String name) {
+        this.name = name;
+        this.messages = new ArrayList<Message>();
+        this.followed = new ArrayList<User>();
+    }
 }

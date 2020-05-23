@@ -20,12 +20,10 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Message getMessage(String username, String messageValue) {
-        User user = userService.getUser(username);
-        Message message = messageRepository.save(new Message()
-                .setValue(messageValue)
-                .setUser(user));
+        User user = userService.findUser(username).orElse(userService.persistUser(username));
+        Message message = messageRepository.save(new Message(messageValue, user));
         user.getMessages().add(message);
-        userService.saveUser(user);
+        userService.updateUser(user);
         return message;
     }
 

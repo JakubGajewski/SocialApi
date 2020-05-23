@@ -6,6 +6,6 @@ import java.util.Collection;
 
 public interface TimelineService {
 
-    Collection<MessageDto> getTimeline(String username);
+    Collection<MessageDto> tryGetTimeline(String username);
 
 }

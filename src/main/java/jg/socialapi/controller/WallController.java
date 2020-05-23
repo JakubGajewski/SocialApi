@@ -27,7 +27,7 @@ public class WallController {
 
     @GetMapping(value = "/wall")
     public ResponseEntity<List<Message>> readWall(@RequestHeader String username) {
-        Collection<MessageDto> wall = wallService.getWall(username);
+        Collection<MessageDto> wall = wallService.tryGetWall(username);
         return new ResponseEntity(wall, ControllerHelper.applicationJsonHeaders(), HttpStatus.OK);
     }
 
