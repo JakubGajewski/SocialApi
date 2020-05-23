@@ -1,4 +1,4 @@
-package jg.socialapi.endpoints;
+package jg.socialapi.integration;
 
 import jg.socialapi.controller.MessageController;
 import jg.socialapi.repository.MessageRepository;
@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.UnsupportedEncodingException;
 
-import static jg.socialapi.Constants.SAMPLE_MESSAGE;
+import static jg.socialapi.Constants.SAMPLE_MESSAGE_JSON;
 import static jg.socialapi.Constants.SAMPLE_MESSAGE_VALUE;
 import static jg.socialapi.Constants.SAMPLE_USER_NAME;
 import static jg.socialapi.Constants.USER_HEADER;
@@ -51,12 +51,10 @@ public class MessageEndpointTest {
         mockMvc.perform(post(messageUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(USER_HEADER, SAMPLE_USER_NAME)
-                .content(SAMPLE_MESSAGE)
+                .content(SAMPLE_MESSAGE_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 //Then
                 .andExpect(result -> {
-                    System.out.println(result.getRequest());
-                    System.out.println(result.getResponse());
                     assertCorrectHttpStatus(result, HttpStatus.CREATED);
                     assertCorrectResponse(result);
                     assertMessageIsPersisted();

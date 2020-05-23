@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class TimelineServiceImpl implements TimelineService {
-
     private final UserService userService;
 
     @Autowired
@@ -28,7 +27,7 @@ public class TimelineServiceImpl implements TimelineService {
     public Collection<MessageDto> tryGetTimeline(String username) {
         Optional<User> user = userService.findUser(username);
         if (user.isEmpty()) {
-            throw new UserNotFoundException(ErrorMessages.USER_NOT_FOUND, username);
+            throw new UserNotFoundException(ErrorMessages.USER_DOES_NOT_EXIST, username);
         }
         return getTimeline(user.get());
     }
@@ -41,6 +40,5 @@ public class TimelineServiceImpl implements TimelineService {
                 .map(MessageMapper::mapMessageToDto)
                 .collect(Collectors.toList());
     }
-
 
 }

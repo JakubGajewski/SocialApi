@@ -1,4 +1,4 @@
-package jg.socialapi.endpoints;
+package jg.socialapi.integration;
 
 import jg.socialapi.controller.TimelineController;
 import jg.socialapi.entity.Message;
@@ -17,11 +17,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 
 import static jg.socialapi.Constants.SAMPLE_FOLLOWED_USER_NAME;
-import static jg.socialapi.Constants.SAMPLE_MESSAGE;
-import static jg.socialapi.Constants.SAMPLE_MESSAGE_1;
+import static jg.socialapi.Constants.SAMPLE_MESSAGE_VALUE;
 import static jg.socialapi.Constants.SAMPLE_MESSAGE_VALUE_1;
 import static jg.socialapi.Constants.SAMPLE_USER_NAME;
 import static jg.socialapi.Constants.USER_HEADER;
@@ -59,18 +57,18 @@ public class TimelineEndpointTest {
     @Test
     @DirtiesContext
     public void whenSendingValidGetRequestThenShouldReceiveTimeline() throws Exception {
-        //Given
+        //given
         persistMockedData();
 
-        //When
+        //when
         mockMvc.perform(get(timelineUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(USER_HEADER, SAMPLE_USER_NAME)
                 .accept(MediaType.APPLICATION_JSON))
-                //Then
+                //then
                 .andExpect(result -> {
                     assertCorrectHttpStatus(result, HttpStatus.OK);
-                    assertRightMessagesAreReturned(result, SAMPLE_MESSAGE_VALUE_1, SAMPLE_MESSAGE_VALUE_1);
+                    assertRightMessagesAreReturned(result, SAMPLE_MESSAGE_VALUE, SAMPLE_MESSAGE_VALUE_1);
                 });
     }
 
@@ -81,11 +79,12 @@ public class TimelineEndpointTest {
     }
 
     private void persistMockedData() {
-        User followingUser = userService.saveUser(new User(SAMPLE_USER_NAME));
-        User followedUser = userService.saveUser(new User(SAMPLE_FOLLOWED_USER_NAME));
-        userService.addToFollowingList(followingUser, followedUser);
-        messageService.getMessage(SAMPLE_FOLLOWED_USER_NAME, SAMPLE_MESSAGE);
-        messageService.getMessage(SAMPLE_FOLLOWED_USER_NAME, SAMPLE_MESSAGE_1);
+        User follower = userService.saveUser(new User(SAMPLE_USER_NAME));
+        User followed = userService.saveUser(new User(SAMPLE_FOLLOWED_USER_NAME));
+        followed.getMessages().add(new Message(SAMPLE_MESSAGE_VALUE, followed));
+        followed.getMessages().add(new Message(SAMPLE_MESSAGE_VALUE_1, followed));
+        userService.updateUser(followed);
+        userService.addToFollowingList(follower, followed);
     }
 
 }

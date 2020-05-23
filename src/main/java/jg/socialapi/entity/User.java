@@ -36,9 +36,13 @@ public class User {
     @JsonIgnoreProperties({"following"})
     private List<User> followed;
 
+    public User() {
+    }
+
     public User(String name) {
         this.name = name;
-        this.messages = new ArrayList<Message>();
-        this.followed = new ArrayList<User>();
+        this.messages = new ArrayList<>();
+        this.followed = new ArrayList<>();
     }
+
 }

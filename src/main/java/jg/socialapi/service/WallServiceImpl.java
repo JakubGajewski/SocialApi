@@ -26,17 +26,19 @@ public class WallServiceImpl implements WallService {
 
     public Collection<MessageDto> tryGetWall(String username) {
         Optional<User> user = userService.findUser(username);
-
-        if (user.isEmpty()) {
-            throw new UserNotFoundException(ErrorMessages.USER_NOT_FOUND, username);
-        }
+        checkIfUserExists(username, user);
         return getWall(user.get());
 
     }
 
+    private void checkIfUserExists(String username, Optional<User> user) {
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(ErrorMessages.USER_DOES_NOT_EXIST, username);
+        }
+    }
+
     private Collection<MessageDto> getWall(User user) {
-        return user
-                .getMessages()
+        return user.getMessages()
                 .stream()
                 .sorted(Comparator.comparing(Message::getTimestamp).reversed())
                 .map(MessageMapper::mapMessageToDto)

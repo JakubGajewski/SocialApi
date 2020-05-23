@@ -1,7 +1,6 @@
-package jg.socialapi.endpoints;
+package jg.socialapi.integration;
 
 import jg.socialapi.controller.WallController;
-import jg.socialapi.entity.User;
 import jg.socialapi.service.MessageService;
 import jg.socialapi.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +16,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.UnsupportedEncodingException;
 
-import static jg.socialapi.Constants.SAMPLE_MESSAGE;
-import static jg.socialapi.Constants.SAMPLE_MESSAGE_1;
 import static jg.socialapi.Constants.SAMPLE_MESSAGE_VALUE;
 import static jg.socialapi.Constants.SAMPLE_MESSAGE_VALUE_1;
 import static jg.socialapi.Constants.SAMPLE_USER_NAME;
@@ -57,15 +54,15 @@ public class WallEndpointTest {
     @Test
     @DirtiesContext
     public void whenSendingValidGetRequestThenShouldReceiveWall() throws Exception {
-        //Given
+        //given
         persistMockedData();
 
-        //When
+        //when
         mockMvc.perform(get(wallUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(USER_HEADER, SAMPLE_USER_NAME)
                 .accept(MediaType.APPLICATION_JSON))
-                //Then
+                //then
                 .andExpect(result -> {
                     assertCorrectHttpStatus(result, HttpStatus.OK);
                     assertRightMessagesAreReturned(result, SAMPLE_MESSAGE_VALUE, SAMPLE_MESSAGE_VALUE_1);
@@ -79,13 +76,8 @@ public class WallEndpointTest {
     }
 
     private void persistMockedData() {
-        saveUser(jg.socialapi.Constants.SAMPLE_USER_NAME);
-        messageService.getMessage(SAMPLE_USER_NAME, SAMPLE_MESSAGE);
-        messageService.getMessage(SAMPLE_USER_NAME, SAMPLE_MESSAGE_1);
+        messageService.upsertUserWithMessage(SAMPLE_USER_NAME, SAMPLE_MESSAGE_VALUE);
+        messageService.upsertUserWithMessage(SAMPLE_USER_NAME, SAMPLE_MESSAGE_VALUE_1);
     }
 
-    private User saveUser(String username) {
-        User user = new User(username);
-        return userService.saveUser(user);
-    }
 }

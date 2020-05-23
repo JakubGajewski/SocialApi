@@ -3,7 +3,6 @@ package jg.socialapi.controller;
 import jg.socialapi.dto.MessageDto;
 import jg.socialapi.entity.Message;
 import jg.socialapi.service.MessageService;
-import jg.socialapi.service.UserService;
 import jg.socialapi.util.ControllerHelper;
 import jg.socialapi.util.mapper.MessageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class MessageController {
 
     @PostMapping(value = "/message", produces = "application/json")
     public ResponseEntity<MessageDto> createPost(@RequestHeader("username") String username, @Valid @RequestBody MessageDto messageDto){
-        Message persistedMessage = messageService.getMessage(username, messageDto.getValue());
+        Message persistedMessage = messageService.upsertUserWithMessage(username, messageDto.getValue());
         MessageDto updatedMessageDto = MessageMapper.mapMessageToDto(persistedMessage);
         return new ResponseEntity<>(updatedMessageDto, ControllerHelper.applicationJsonHeaders(), HttpStatus.CREATED);
     }

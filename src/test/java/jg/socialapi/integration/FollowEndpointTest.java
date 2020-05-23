@@ -1,4 +1,4 @@
-package jg.socialapi.endpoints;
+package jg.socialapi.integration;
 
 import jg.socialapi.controller.FollowController;
 import jg.socialapi.entity.User;

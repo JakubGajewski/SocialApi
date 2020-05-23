@@ -2,20 +2,18 @@ package jg.socialapi.service;
 
 import jg.socialapi.entity.Message;
 import jg.socialapi.entity.User;
-import jg.socialapi.repository.MessageRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.Optional;
 
+import static jg.socialapi.Constants.SAMPLE_TIMESTAMP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 class MessageServiceImplTest {
 
-    MessageRepository messageRepository = Mockito.mock(MessageRepository.class);
     UserService userService = Mockito.mock(UserService.class);
 
     final String username = "john";
@@ -24,18 +22,26 @@ class MessageServiceImplTest {
     @Test
     void whenGetMessageThenReturnRightMessage() {
         //given
-        User user = mockUser(username);
-        Message message = mockMessage(user);
-        message.setUser(user);
+        User user = mockUserWithMessage();
         //when
-        when(messageRepository.save(message)).thenReturn(message);
-        when(userService.persistUser(username)).thenReturn(user);
+        when(userService.findUser(username)).thenReturn(Optional.of(user));
+        when(userService.updateUser(user)).thenReturn(user);
+        when(userService.getLastMessage(user)).thenReturn(user.getMessages().get(0));
         //then
-        MessageService messageService = new MessageServiceImpl(messageRepository, userService);
-        assertThat(messageService.getMessage(username, messageValue)).isEqualTo(message);
+        MessageService messageService = new MessageServiceImpl(userService);
+        assertThat(messageService.upsertUserWithMessage(username, messageValue).getValue())
+                .isEqualTo(userService.getLastMessage(user).getValue());
     }
 
-    private User mockUser(String username) {
+    private User mockUserWithMessage() {
+        User user = mockUser();
+        Message message = mockMessage(user);
+        message.setUser(user);
+        user.getMessages().add(message);
+        return user;
+    }
+
+    private User mockUser() {
         User user = new User(username);
         user.setId(12);
         return user;
@@ -44,7 +50,7 @@ class MessageServiceImplTest {
     private Message mockMessage(User user) {
         Message message = new Message(messageValue, user);
         message.setId(13);
-        message.setTimestamp(Timestamp.valueOf("2020-01-01 12:00:00"));
+        message.setTimestamp(Timestamp.valueOf(SAMPLE_TIMESTAMP));
         return message;
     }
 

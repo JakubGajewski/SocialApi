@@ -30,6 +30,13 @@ public class Message {
     @JsonManagedReference
     private User user;
 
+    public Message() {
+    }
+
+    public Message(String value) {
+        this.value = value;
+    }
+
     public Message(String value, User user) {
         this.value = value;
         this.user = user;

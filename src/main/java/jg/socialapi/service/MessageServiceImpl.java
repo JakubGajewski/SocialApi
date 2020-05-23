@@ -2,29 +2,44 @@ package jg.socialapi.service;
 
 import jg.socialapi.entity.Message;
 import jg.socialapi.entity.User;
-import jg.socialapi.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private final MessageRepository messageRepository;
     private final UserService userService;
 
     @Autowired
-    public MessageServiceImpl(MessageRepository messageRepository, UserService userService) {
-        this.messageRepository = messageRepository;
+    public MessageServiceImpl(UserService userService) {
         this.userService = userService;
     }
 
     @Override
-    public Message getMessage(String username, String messageValue) {
-        User user = userService.findUser(username).orElse(userService.persistUser(username));
-        Message message = messageRepository.save(new Message(messageValue, user));
+    public Message upsertUserWithMessage(String username, String messageValue) {
+        Optional<User> userOptional = userService.findUser(username);
+
+        if (userOptional.isPresent()) {
+            return updateUserWithNewMessage(messageValue, userOptional.get());
+        }
+        User user = createNewUserWithMessage(username, messageValue);
+        return userService.getLastMessage(user);
+    }
+
+    private User createNewUserWithMessage(String username, String messageValue) {
+        User user = new User(username);
+        Message message = new Message(messageValue, user);
         user.getMessages().add(message);
-        userService.updateUser(user);
-        return message;
+        return userService.saveUser(user);
+    }
+
+    private Message updateUserWithNewMessage(String messageValue, User user) {
+        Message message = new Message(messageValue, user);
+        user.getMessages().add(message);
+        user = userService.updateUser(user);
+        return userService.getLastMessage(user);
     }
 
 }

@@ -7,11 +7,9 @@ public class Constants {
     public static final String SAMPLE_MESSAGE_VALUE = "the message";
     public static final String SAMPLE_MESSAGE_VALUE_1 = "another message";
 
-    public static final String SAMPLE_MESSAGE = String.format("{\n" +
+    public static final String SAMPLE_MESSAGE_JSON = String.format("{\n" +
             "  \"value\": \"%s\"\n" +
             "}", SAMPLE_MESSAGE_VALUE);
 
-    public static final String SAMPLE_MESSAGE_1 = String.format("{\n" +
-            "  \"value\": \"%s\"\n" +
-            "}", SAMPLE_MESSAGE_VALUE_1);
+    public static final String SAMPLE_TIMESTAMP = "2020-01-01 12:00:00";
 }
